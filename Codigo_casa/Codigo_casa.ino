@@ -1,30 +1,25 @@
-#include "BluetoothSerial.h"
+//#include "BluetoothSerial.h"
+#include <SoftwareSerial.h>
 
-//Ultrassonico
-#define PinoTrigger 34
-#define PinoEcho 35
-int duracao = 0;
-int distanciaSensor = 0;
-int distanciaLigaLed = 20; //centímetros
-
-#define ligaledCozinha 'a'
-#define ligaledSala 'b'
-#define ligaledQuarto 'c'
+#define ligaLedCozinha 'a'
+#define ligaLedSala 'b'
+#define ligaLedQuarto 'c'
 
 #define pinoCozinha 12
 #define pinoSala 13
 #define pinoQuarto 14
 #define ledUltrassonico 27
-                                                                                                             
+
 bool cozinhaLigado = false;
 bool salaLigado = false;
 bool quartoLigado = false;
 
 
-BluetoothSerial SerialBT;
+//BluetoothSerial SerialBT;
+SoftwareSerial SerialBT(10, 11); // RX, TX do Arduino
+
 void serialRead();
 void ligaLedBT();
-void ligaLedUltrassonico();
 
 
 // the setup function runs once when you press reset or power the board
@@ -37,11 +32,6 @@ void setup() {
   pinMode(pinoCozinha, OUTPUT);
   pinMode(pinoSala, OUTPUT);
   pinMode(pinoQuarto, OUTPUT);
-
-  //O código buga nesta parte
-  pinMode(ledUltrassonico, OUTPUT);
-  pinMode(PinoEcho,INPUT);
-  pinMode(PinoTrigger,OUTPUT);
 }
 
 void loop() {
@@ -51,7 +41,6 @@ void loop() {
   digitalWrite(14, LOW);    // turn the LED off by making the voltage LOW
   delay(1000); */ 
   Serial.print("loop");
-  ligaLedUltrassonico();
   serialRead();
 }
 
@@ -69,47 +58,22 @@ void serialRead()
   }
 }
 
-void ligaLedUltrassonico()
-{ 
-  //Da varios pulsos no pino trigger
-  digitalWrite(PinoTrigger, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PinoTrigger,LOW);
-
-
-  //Leitura e armazenamento do Trigger
-  duracao = pulseIn(PinoEcho, HIGH);
-  distanciaSensor = duracao*0.017175;
-  Serial.print(distanciaSensor);
-  Serial.println("cm");  
-
- 
-  //Caso a distancia que o ultrassonico esteja marcando
-  //for menor que a distancia pré-definida ele aciona o led
-  if(distanciaSensor >= distanciaLigaLed)
-  {
-    digitalWrite(ledUltrassonico, HIGH);
-  }else{
-    digitalWrite(ledUltrassonico, LOW);
-  }
-}
-
 void ligaLedBT()
 {
   //COZINHA
-  if(SerialBT.read() == ligaledCozinha){
+  if(SerialBT.read() == ligaLedCozinha){
     cozinhaLigado = !cozinhaLigado;
     digitalWrite (pinoCozinha, cozinhaLigado);  
   }
   
   //SALA
-  if(SerialBT.read() == ligaledSala){
+  if(SerialBT.read() == ligaLedSala){
     salaLigado = !salaLigado;
     digitalWrite (pinoSala, salaLigado);  
   }
   
   //QUARTO
-  if(SerialBT.read() == ligaledQuarto){
+  if(SerialBT.read() == ligaLedQuarto){
     quartoLigado = !quartoLigado;
     digitalWrite (pinoQuarto, quartoLigado);  
   }
