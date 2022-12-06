@@ -4,15 +4,17 @@
 #define ligaLedCozinha 'a'
 #define ligaLedSala 'b'
 #define ligaLedQuarto 'c'
+#define ligaLedVaranda 'd'
 
 #define pinoCozinha 12
 #define pinoSala 13
 #define pinoQuarto 14
-#define ledUltrassonico 27
+#define pinoVaranda 15
 
 bool cozinhaLigado = false;
 bool salaLigado = false;
 bool quartoLigado = false;
+bool varandaLigado = false;
 
 
 //BluetoothSerial SerialBT;
@@ -28,19 +30,13 @@ void setup() {
   Serial.println("setup");
   SerialBT.begin("casaTCC");
   
-  
   pinMode(pinoCozinha, OUTPUT);
   pinMode(pinoSala, OUTPUT);
   pinMode(pinoQuarto, OUTPUT);
+  pinMode(pinoVaranda, OUTPUT);
 }
 
 void loop() {
-  /*Serial.println("loop");
-  digitalWrite(14, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);             // wait for a second
-  digitalWrite(14, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000); */ 
-  Serial.print("loop");
   serialRead();
 }
 
@@ -72,6 +68,12 @@ void ligaLedBT()
     digitalWrite (pinoSala, salaLigado);  
   }
   
+  //QUARTO
+  if(SerialBT.read() == ligaLedQuarto){
+    quartoLigado = !quartoLigado;
+    digitalWrite (pinoQuarto, quartoLigado);  
+  }
+
   //QUARTO
   if(SerialBT.read() == ligaLedQuarto){
     quartoLigado = !quartoLigado;
